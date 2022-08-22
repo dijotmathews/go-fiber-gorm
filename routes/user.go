@@ -25,12 +25,12 @@ func CreateUser(c *fiber.Ctx) error {
 	var user models.User
 
 	if err := c.BodyParser(&user); err != nil {
-		return c.Status(400).JSON(err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	database.Database.Db.Create(&user)
 	responseUser := CreateResponseUser(user)
-	return c.Status(200).JSON(responseUser)
+	return c.Status(fiber.StatusOK).JSON(responseUser)
 }
 
 // GetUsers ...
@@ -45,7 +45,7 @@ func GetUsers(c *fiber.Ctx) error {
 		responseUsers = append(responseUsers, responseUser)
 	}
 
-	return c.Status(200).JSON(responseUsers)
+	return c.Status(fiber.StatusOK).JSON(responseUsers)
 
 }
 
@@ -64,16 +64,16 @@ func GetUser(c *fiber.Ctx) error {
 
 	var user models.User
 	if err != nil {
-		return c.Status(400).JSON("Please ensure the is is an integer")
+		return c.Status(fiber.StatusBadRequest).JSON("Please ensure the is is an integer")
 	}
 
 	if err := findUser(id, &user); err != nil {
-		return c.Status(400).JSON(err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	responseUser := CreateResponseUser(user)
 
-	return c.Status(200).JSON(responseUser)
+	return c.Status(fiber.StatusOK).JSON(responseUser)
 
 }
 
@@ -81,12 +81,12 @@ func GetUser(c *fiber.Ctx) error {
 func UpdateUser(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		return c.Status(400).JSON("Please ensure the is is an integer")
+		return c.Status(fiber.StatusBadRequest).JSON("Please ensure the is is an integer")
 
 	}
 	var user models.User
 	if err := findUser(id, &user); err != nil {
-		return c.Status(400).JSON(err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	type UpdateUser struct {
@@ -96,7 +96,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	var updateData UpdateUser
 
 	if err := c.BodyParser(&updateData); err != nil {
-		return c.Status(500).JSON(err.Error())
+		return c.Status(fiber.StatusInternalServerError).JSON(err.Error())
 	}
 
 	if updateData.FirstName != "" {
@@ -110,7 +110,7 @@ func UpdateUser(c *fiber.Ctx) error {
 	database.Database.Db.Save(&user)
 
 	responseUser := CreateResponseUser(user)
-	return c.Status(200).JSON(responseUser)
+	return c.Status(fiber.StatusOK).JSON(responseUser)
 
 }
 
@@ -118,18 +118,18 @@ func UpdateUser(c *fiber.Ctx) error {
 func DeleteUser(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
-		return c.Status(400).JSON("Please ensure the is is an integer")
+		return c.Status(fiber.StatusBadRequest).JSON("Please ensure the is is an integer")
 
 	}
 	var user models.User
 	if err := findUser(id, &user); err != nil {
-		return c.Status(400).JSON(err.Error())
+		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 
 	if err := database.Database.Db.Delete(&user).Error; err != nil {
 		return c.Status(404).JSON(err.Error())
 	}
 
-	return c.Status(200).SendString("user deleted")
+	return c.Status(fiber.StatusOK).SendString("user deleted")
 
 }

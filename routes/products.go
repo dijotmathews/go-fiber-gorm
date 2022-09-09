@@ -15,7 +15,7 @@ type Product struct {
 	SerialNumber string `json:"serial_number"`
 }
 
-func createResponseProduct(productModel models.Product) Product {
+func CreateResponseProduct(productModel models.Product) Product {
 	return Product{ID: productModel.ID, Name: productModel.Name, SerialNumber: productModel.SerialNumber}
 }
 
@@ -27,7 +27,7 @@ func CreateProduct(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
 	database.Database.Db.Create(&product)
-	responseProduct := createResponseProduct(product)
+	responseProduct := CreateResponseProduct(product)
 
 	return c.Status(fiber.StatusOK).JSON(responseProduct)
 }
@@ -41,7 +41,7 @@ func GetProducts(c *fiber.Ctx) error {
 	var responseProducts []Product
 
 	for _, product := range products {
-		responseProduct := createResponseProduct(product)
+		responseProduct := CreateResponseProduct(product)
 		responseProducts = append(responseProducts, responseProduct)
 	}
 
@@ -69,7 +69,7 @@ func GetProduct(c *fiber.Ctx) error {
 	if err = findProduct(id, &product); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(err.Error())
 	}
-	responseProduct := createResponseProduct(product)
+	responseProduct := CreateResponseProduct(product)
 
 	return c.Status(fiber.StatusOK).JSON(responseProduct)
 }
@@ -108,7 +108,7 @@ func UpdateProduct(c *fiber.Ctx) error {
 
 	database.Database.Db.Save(product)
 
-	responseProduct := createResponseProduct(product)
+	responseProduct := CreateResponseProduct(product)
 	return c.Status(fiber.StatusOK).JSON(responseProduct)
 
 }

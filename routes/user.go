@@ -64,7 +64,7 @@ func GetUser(c *fiber.Ctx) error {
 
 	var user models.User
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON("Please ensure the is is an integer")
+		return c.Status(fiber.StatusBadRequest).JSON("Please ensure the id is an integer")
 	}
 
 	if err := findUser(id, &user); err != nil {
@@ -127,7 +127,7 @@ func DeleteUser(c *fiber.Ctx) error {
 	}
 
 	if err := database.Database.Db.Delete(&user).Error; err != nil {
-		return c.Status(404).JSON(err.Error())
+		return c.Status(fiber.StatusNotFound).JSON(err.Error())
 	}
 
 	return c.Status(fiber.StatusOK).SendString("user deleted")
